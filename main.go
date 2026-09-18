@@ -666,7 +666,7 @@ func main() {
 | | | | | | | '__/ _ \ | | |/ _ \ \ / /   
 | |_| | |_| | | |  __/ |_| |  __/\ V /    
  \__\_\\__,_|_|  \___|____/ \___| \_/     
- 
+ `
 	lines := strings.Split(banner, "\n")
 	for _, line := range lines {
 		// Gradient from Green (0, 255, 0) to White (255, 255, 255)

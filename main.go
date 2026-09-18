@@ -146,17 +146,40 @@ func loadConfig() Config {
 
 func normalizeProxyLine(line string) (string, bool) {
 	line = strings.TrimSpace(line)
+
 	if line == "" || strings.HasPrefix(line, "#") {
 		return "", false
 	}
+
+	// Already has a protocol.
+	if strings.HasPrefix(line, "http://") ||
+		strings.HasPrefix(line, "https://") ||
+		strings.HasPrefix(line, "socks5://") ||
+		strings.HasPrefix(line, "socks5h://") {
+		u, err := url.Parse(line)
+		if err != nil || u.Host == "" {
+			return "", false
+		}
+		return u.String(), true
+	}
+
+	// Provider format:
+	// username:password@host:port
+	// or:
+	// host:port
 	if strings.Contains(line, "@") {
+		if _, err := url.Parse("http://" + line); err != nil {
+			return "", false
+		}
 		return "http://" + line, true
 	}
-	parts := strings.Split(line, ":")
-	if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
-		return "http://" + line, true
+
+	host, port, ok := strings.Cut(line, ":")
+	if !ok || host == "" || port == "" {
+		return "", false
 	}
-	return "", false
+
+	return "http://" + line, true
 }
 
 func loadProxies() []string {
@@ -654,7 +677,7 @@ func main() {
 	}
 
 	fmt.Println("\n  " + rgb(100, 100, 100) + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" + X)
-	fmt.Printf("                                     %sdev by @ykgtteh%s\n", rgb(150, 150, 150), X)
+	fmt.Printf("                                     %sdev by @QuroDev%s\n", rgb(150, 150, 150), X)
 
 	fmt.Printf("\n  %s Select Mode:%s\n", rgb(0, 255, 128), X)
 
